@@ -1,6 +1,6 @@
 local class_prototype = {
-    constructor = function(n_args)
-        local new_of_class
+    constructor = function(self, n_args)
+        local new_of_class = {}
 
         for key, value in pairs(self) do
             new_of_class[key] = value
@@ -18,14 +18,15 @@ local class_prototype = {
     end
 }
 
-local function class(name, prototype) 
+local function class(name, prototype, onCreate) 
     local new_class_entity = {
         prototype = prototype
     }
 
-    local function new_class_entity:new(onCreate, ...)
-        if (onCreate) then onCreate() end
-        return class_prototype.constructor(self, table.unpack({...}))
+    function new_class_entity:new(n_args)
+        local new_instance = class_prototype.constructor(self, n_args)
+        if (onCreate) then return onCreate(new_instance) end
+        return new_instance
     end
 
     new_class_entity.class = name
