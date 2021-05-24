@@ -8,6 +8,7 @@ local sdir = love.filesystem.getSourceBaseDirectory()
 local dir = love.filesystem.getWorkingDirectory()
 
 class = require('src.utils.class')
+dump = require('src.utils.dump')
 game = require('src.game')
 manager = require('src.manager')
 loader = require('src.loader')
