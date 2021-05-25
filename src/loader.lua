@@ -32,14 +32,23 @@ function parser:parse(input)
 end
 
 function loader:deserialize(map_path)
-    local map_data = {}
-    local map_data_raw = io.open(map_path, 'r'):read('*a')
+    local map_data_raw = io.open(map_path, 'r')
+    if (map_data_raw) then
+        map_data_raw = map_data_raw:read('*a')
+    else
+        return
+    end
+
+    local map_data = {
+        path = map_path:match('(.+/).*$')
+    }
+
     local map_tags = parser:parse(map_data_raw)
     for index, tag in pairs(map_tags) do
         map_data[index] = {}
         map_data[index].interval = tag.interval
         map_data[index].actions = {}
-        for action, params in map_tags[index].command:gmatch('(%w+); (.-)[\r\n;,>]') do
+        for action, params in map_tags[index].command:gmatch('([%w_]+); (.-)[\r\n;,>]') do
             table.insert(map_data[index].actions, {
                 type = action,
                 params = {}
@@ -53,7 +62,7 @@ function loader:deserialize(map_path)
         end
     end
 
-    dump(map_data)
+    return map_data
 end
 
 return loader

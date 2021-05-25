@@ -9,7 +9,8 @@ end
 
 
 env = {
-    platform = package.config:sub(1,1) == '\\' and 'windows' or '?nix'
+    platform = package.config:sub(1,1) == '\\' and 'windows' or '?nix',
+    debug = true
 }
 
 env.window = table.pack(

@@ -7,31 +7,38 @@ render --[[ render information ]] = {
 local sdir = love.filesystem.getSourceBaseDirectory()
 local dir = love.filesystem.getWorkingDirectory()
 
+calc = require('src.utils.calc')
 class = require('src.utils.class')
 dump = require('src.utils.dump')
 game = require('src.game')
-manager = require('src.manager')
+gradient = require('src.utils.gradient')
 loader = require('src.loader')
+manager = require('src.manager')
 
 function love.load()
+    love.window.setVSync(1)
     love.window.setFullscreen(true)
     require('src.utils.env')
     -- Load classes
-    Actor = require('src.classes.Actor')
-    -- Load actors
-    require('src.actors.index')
+    Entity = require('src.classes.Entity')
+    Video = require('src.classes.Video')
+    Background = require('src.classes.Background')
+    Event = require('src.classes.Event')
+    -- Load entities
+    require('src.entities.index')
     -- Finally, begin
 
     -- Load example map_data
-    loader:deserialize('maps/nice.typu')
+    local map_data = loader:deserialize('maps/nice.typu')
+    game:play(map_data)
 end
 
 function love.draw()
-    for id, actor in pairs(manager.actors_list:getDrawable()) do
-        actor:draw()
-    end
+    game:draw()
 end
 
 function love.update(delta)
     render.delta = delta
+    game:update()
+    manager:eventHandler()
 end
