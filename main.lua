@@ -19,7 +19,7 @@ function love.load()
     love.window.setVSync(1)
     love.window.setFullscreen(true)
     require('src.utils.env')
-    -- Load classes
+    -- Load classes 
     Entity = require('src.classes.Entity')
     Video = require('src.classes.Video')
     Background = require('src.classes.Background')

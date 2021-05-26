@@ -71,7 +71,8 @@ function game:draw()
     end
 
     -- Finally draw the UI
-    gradient.draw(self.background.gradient, 0, env.window.height - 200, env.window.width, 200)
+    gradient.draw(self.background.gradient_bottom, 0, env.window.height - 200, env.window.width, 200)
+    gradient.draw(self.background.gradient_top, 0, 0, env.window.width, 200)
 end
 
 return game

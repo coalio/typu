@@ -1,7 +1,8 @@
 local Background = {
     draw = nil,
     video = nil,
-    gradient = nil
+    gradient_bottom = nil,
+    gradient_top = nil
 }
 
 function Background:draw()
@@ -13,11 +14,19 @@ function Background:draw()
 end
 
 return class('Background', Background, function(new_background)
-    new_background.gradient = gradient.create('vertical', {
+    new_background.gradient_bottom = gradient.create('vertical', {
         0, 0, 0, 0
+    }, {
+        0, 0, 0, 1
     }, {
         0, 0, 0, 1
     })
     
+     new_background.gradient_top = gradient.create('vertical', {
+        0, 0, 0, 1
+    }, {
+        0, 0, 0, 0
+    })
+
     return new_background
 end)
