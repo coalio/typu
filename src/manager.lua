@@ -12,11 +12,13 @@ end
 local entities = {}
 
 function entities:add(entity)
-    self[entity.id or #self.entities + 1] = entity
+    entity.id = entity.id or #self + 1
+    self[entity.id] = entity
+    return entity
 end
 
 function entities:delete(id)
-    table.remove(self, id)
+    self[id] = nil
 end
 
 function entities:getDrawable()
@@ -24,6 +26,10 @@ function entities:getDrawable()
 
     for id, entity in pairs(self) do
         if (type(entity) ~= "function") --[[ ignore prototype ]] then
+            if (entity.type == "dynamic_text") --[[ dynamic text ]] then
+                break
+            end
+
             if (entity:isVisible()) then
                 table.insert(drawable_entities, entity)
             end
@@ -31,6 +37,20 @@ function entities:getDrawable()
     end
 
     return drawable_entities
+end
+
+function entities:getKeystrokes()
+    local keystrokes = {}
+
+    for id, entity in pairs(self) do
+        if (type(entity) ~= "function") then
+            if (entity.type == "dynamic_text") then
+                table.insert(keystrokes, entity)
+            end
+        end
+    end
+
+    return keystrokes
 end
 
 local events_stack = {

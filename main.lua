@@ -13,6 +13,7 @@ dump = require('src.utils.dump')
 game = require('src.game')
 gradient = require('src.utils.gradient')
 loader = require('src.loader')
+keyboard = require('src.keyboard')
 manager = require('src.manager')
 
 function love.load()
@@ -24,6 +25,7 @@ function love.load()
     Video = require('src.classes.Video')
     Background = require('src.classes.Background')
     Event = require('src.classes.Event')
+    Text = require('src.classes.Text')
     -- Load entities
     require('src.entities.index')
     -- Finally, begin
@@ -39,6 +41,11 @@ end
 
 function love.update(delta)
     render.delta = delta
+    render.avdelta = love.timer.getAverageDelta()
     game:update()
     manager:eventHandler()
+end
+
+function love.keypressed(key, scancode, is_repeat)
+    keyboard:handleKeypress(key, scancode, is_repeat)
 end

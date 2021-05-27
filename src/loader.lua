@@ -44,11 +44,13 @@ function loader:deserialize(map_path)
     }
 
     local map_tags = parser:parse(map_data_raw)
+    for k,v in pairs(map_tags) do for k,v in pairs(v) do print(k,v) end end
     for index, tag in pairs(map_tags) do
         map_data[index] = {}
         map_data[index].interval = tag.interval
+        map_data[index].text = tag.command:match('"(.-)"')
         map_data[index].actions = {}
-        for action, params in map_tags[index].command:gmatch('([%w_]+); (.-)[\r\n;,>]') do
+        for action, params in tag.command:gmatch('([%w_]+); (.-)[\r\n;,>]') do
             table.insert(map_data[index].actions, {
                 type = action,
                 params = {}

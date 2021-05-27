@@ -16,9 +16,15 @@ local Text = {
     mov = {
         vx = nil,
         vy = nil,
+    },
+
+    dim = {
+        w = nil,
+        h = nil
     }
 }
 
+-- Add colored text
 function Text:move(x, y)
     self.pos.x = self.pos.x + (render.delta * (x * self.mov.vx))
     self.pos.y = self.pos.y + (render.delta * (y * self.mov.vy))
@@ -36,6 +42,14 @@ function Text:isVisible()
     )
 end
 
+function Text:isOutOfBounds()
+    return self.pos.x + self.dim.w < 0
+end
+
+function Text:destroy()
+    manager.entities:delete(self.id)
+end
+
 function Text:isInRange()
     if (self.type == "lyric_dynamic" and self:isVisible()) then
         return (
@@ -43,6 +57,10 @@ function Text:isInRange()
             self.pos.x + self.dim.w > manager.entities[1].pos.x
         )
     end
+end
+
+function Text:colorTextAt(start_at, end_at)
+    -- https://love2d.org/wiki/Text:add
 end
 
 function Text:eventHandler(event)

@@ -14,6 +14,11 @@ local Entity = {
     mov = {
         vx = nil,
         vy = nil,
+    },
+
+    dim = {
+        w = nil,
+        h = nil
     }
 }
 
