@@ -49,7 +49,7 @@ function game:generateLyrics()
     Text:new {
         text = text,
         font = self.keystroke_font,
-        type = "dynamic_text",
+        type = "lyric_dynamic",
 
         pos = {
             x = env.window.width,
@@ -71,6 +71,10 @@ end
 function game:finish()
     -- game finished
     os.exit(0) -- eh, ill do something here eventually
+end 
+
+function game:handleKeypress(key, scancode, is_repeat)
+    
 end
 
 function game:nextInstruction()
@@ -128,44 +132,25 @@ function game:update()
     end
 end
 
+function game:drawKeystrokes()
+    for index, keystroke in pairs(manager.entities:getKeystrokes()) do
+        keystroke:draw()
+    end
+end
+
 function game:draw()
     if (not self.currently_playing) then return end
 
-    -- Draw the background
     self.background:draw()
 
-    -- Draw entities
     for id, entity in pairs(manager.entities:getDrawable()) do
         entity:draw()
     end
 
-    -- Finally draw the UI
+    interface.drawGradients() -- Background gradients
+    interface.drawLyricsPreview()
     
-    gradient.draw(self.background.gradient_bottom, 0, env.window.height - 100, env.window.width, 100)
-    gradient.draw(self.background.gradient_top, 0, 0, env.window.width, 200)
-    if (self.current.next_instruction and self.current.next_instruction.text) then
-        -- text
-        love.graphics.setFont(self.preview_font)
-        love.graphics.print(
-            self.current.next_instruction.text,
-            10,
-            env.window.height - 54
-        )
-    end
-
-    if (self.current.instruction.text and self.current.instruction_index ~= 1) then
-        love.graphics.setFont(self.current_font)
-        love.graphics.print(
-            self.current.instruction.text,
-            10,
-            env.window.height - 36
-        )
-    end
-
-    -- dynamic text
-    for index, keystroke in pairs(manager.entities:getKeystrokes()) do
-        keystroke:draw()
-    end
+    game:drawKeystrokes()
 end
 
 return game

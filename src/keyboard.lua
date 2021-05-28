@@ -7,6 +7,7 @@ function keyboard:handleKeypress(key, scancode, is_repeat)
 
     if (game.currently_playing) then
         -- check if keypress is in sentence range and order
+        game:handleKeypress(key, scancode, is_repeat)
     end
 end
 

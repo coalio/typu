@@ -6,8 +6,10 @@ local Text = {
     text = nil,
     font = nil,
     type = nil,
+    _text = nil,
 
-    
+    sub = {},
+
     pos = {
         x = nil,
         y = nil
@@ -51,7 +53,7 @@ function Text:destroy()
 end
 
 function Text:isInRange()
-    if (self.type == "lyric_dynamic" and self:isVisible()) then
+    if (self.type == "lyric_dynamic") then
         return (
             self.pos.x < manager.entities[2].pos.x and 
             self.pos.x + self.dim.w > manager.entities[1].pos.x
@@ -69,6 +71,27 @@ function Text:eventHandler(event)
     end
 end
 
+function Text:getSubInRange()
+    local min_sub = 0
+    for index, sub in pairs(self.sub) do
+        if (
+            sub.width > min_sub and
+            self.pos.x + sub.width < manager.entities[2].pos.x 
+        )
+        -- if the sub is inside range then make this min sub
+    end
+end
+
 return class('Text', Text, function(new_text)
     manager.entities:add(new_text)
+
+    for character, at in new_text.text:gmatch('.()') do
+        local string = new_text.text:sub(1, at)
+        new_text.sub[at] = {
+            string = string,
+            width = new_text.font:getWidth(string)
+        }
+    end
+
+    return new_text
 end)
