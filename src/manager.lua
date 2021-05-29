@@ -26,7 +26,7 @@ function entities:getDrawable()
 
     for id, entity in pairs(self) do
         if (type(entity) ~= "function") --[[ ignore prototype ]] then
-            if (entity.type == "dynamic_text") --[[ dynamic text ]] then
+            if (entity.type == "lyric_dynamic") --[[ this is handled apart ]] then
                 break
             end
 
@@ -44,7 +44,7 @@ function entities:getKeystrokes()
 
     for id, entity in pairs(self) do
         if (type(entity) ~= "function") then
-            if (entity.type == "dynamic_text") then
+            if (entity.type == "lyric_dynamic") then
                 table.insert(keystrokes, entity)
             end
         end

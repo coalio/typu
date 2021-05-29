@@ -7,6 +7,8 @@ render --[[ render information ]] = {
 local sdir = love.filesystem.getSourceBaseDirectory()
 local dir = love.filesystem.getWorkingDirectory()
 
+love.window.setFullscreen(true)
+require('src.utils.env')
 calc = require('src.utils.calc')
 class = require('src.utils.class')
 dump = require('src.utils.dump')
@@ -18,9 +20,11 @@ keyboard = require('src.keyboard')
 manager = require('src.manager')
 
 function love.load()
+    if (env.muted) then
+        love.audio.setVolume(0)
+    end
+
     love.window.setVSync(1)
-    love.window.setFullscreen(true)
-    require('src.utils.env')
     -- Load classes 
     Entity = require('src.classes.Entity')
     Video = require('src.classes.Video')

@@ -33,6 +33,8 @@ function Text:move(x, y)
 end
 
 function Text:draw()
+    love.graphics.setFont(love.graphics.newFont(16))
+    love.graphics.print(math.floor(self.pos.x) .. ' ' .. (self:getSubInRange().string or 'out-of-range'), self.pos.x, self.pos.y-56)
     love.graphics.setFont(self.font)
     love.graphics.print(self.text, self.pos.x, self.pos.y)
 end
@@ -62,7 +64,7 @@ function Text:isInRange()
 end
 
 function Text:colorTextAt(start_at, end_at)
-    -- https://love2d.org/wiki/Text:add
+    -- https://love2d.org/wiki/Text
 end
 
 function Text:eventHandler(event)
@@ -72,22 +74,27 @@ function Text:eventHandler(event)
 end
 
 function Text:getSubInRange()
-    local min_sub = 0
+    local min_sub = {width = 0}
+
     for index, sub in pairs(self.sub) do
         if (
-            sub.width > min_sub and
+            sub.width > min_sub.width and
             self.pos.x + sub.width < manager.entities[2].pos.x 
-        )
-        -- if the sub is inside range then make this min sub
+        ) then
+            min_sub = sub
+        end
     end
+
+    return min_sub
 end
 
 return class('Text', Text, function(new_text)
     manager.entities:add(new_text)
 
-    for character, at in new_text.text:gmatch('.()') do
+    for at, character in new_text.text:gmatch('()(.)') do
         local string = new_text.text:sub(1, at)
         new_text.sub[at] = {
+            at = at,
             string = string,
             width = new_text.font:getWidth(string)
         }
