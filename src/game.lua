@@ -10,7 +10,6 @@ local game = {
     current = {
         instruction_index = nil,
         old_clock = 0,
-        lyrics = nil,
         speed = 100, -- Test speed, this should be set from the map
         sentence = '' -- This is the sub in range
     }
@@ -75,7 +74,8 @@ function game:finish()
 end 
 
 function game:handleKeypress(key, scancode, is_repeat)
-    self:checkInRange()
+    local sub_in_range = self:checkInRange()
+
 end
 
 function game:nextInstruction()
@@ -104,12 +104,24 @@ function game:performAction(action)
 end
 
 function game:checkInRange()
+    local sentences_in_range = {}
     for id, keystroke in pairs(manager.entities:getKeystrokes()) do
         if (keystroke:isInRange()) then
-            self.current.sentence = keystroke:getSubInRange()
-            for k,v in pairs(self.current.sentence) do print(k,v) end
+            local sub_in_range = keystroke:getSubInRange().string
+            if (sub_in_range) then
+                table.insert(
+                    sentences_in_range,
+                    {
+                        keystroke = keystroke,
+                        string = sub_in_range:sub(keystroke:getSubOffRange().at or 1, -1)
+                    }
+                )
+            end
         end
     end
+
+    self.current.sentences = sentences_in_range
+    return self.current.sentences
 end
 
 function game:update()

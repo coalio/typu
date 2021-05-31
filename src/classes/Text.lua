@@ -34,7 +34,10 @@ end
 
 function Text:draw()
     love.graphics.setFont(love.graphics.newFont(16))
-    love.graphics.print(math.floor(self.pos.x) .. ' ' .. (self:getSubInRange().string or 'out-of-range'), self.pos.x, self.pos.y-56)
+    love.graphics.print(math.floor(self.pos.x) .. ' ' .. 
+        (self:getSubInRange().string and self:getSubInRange().string:sub(self:getSubOffRange().at or 1, -1) or 'out-of-range'),
+        self.pos.x, self.pos.y-56
+    )
     love.graphics.setFont(self.font)
     love.graphics.print(self.text, self.pos.x, self.pos.y)
 end
@@ -80,6 +83,21 @@ function Text:getSubInRange()
         if (
             sub.width > min_sub.width and
             self.pos.x + sub.width < manager.entities[2].pos.x 
+        ) then
+            min_sub = sub
+        end
+    end
+
+    return min_sub
+end
+
+function Text:getSubOffRange()
+    local min_sub = {width = 0}
+
+    for index, sub in pairs(self.sub) do
+        if (
+            sub.width > min_sub.width and
+            self.pos.x + sub.width < manager.entities[1].pos.x
         ) then
             min_sub = sub
         end
