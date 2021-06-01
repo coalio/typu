@@ -74,8 +74,12 @@ function game:finish()
 end 
 
 function game:handleKeypress(key, scancode, is_repeat)
-    local sub_in_range = self:checkInRange()
-
+    local sentences = self:checkInRange()
+    for index, sentence in pairs(sentences) do
+        if (key == sentence.string:sub(1, 1)) then
+            -- Do something to count the keystroke
+        end
+    end
 end
 
 function game:nextInstruction()
@@ -107,13 +111,15 @@ function game:checkInRange()
     local sentences_in_range = {}
     for id, keystroke in pairs(manager.entities:getKeystrokes()) do
         if (keystroke:isInRange()) then
-            local sub_in_range = keystroke:getSubInRange().string
-            if (sub_in_range) then
+            local sub_in_range = keystroke:getSubInRange()
+            local sub_off_range = keystroke:getSubOffRange()
+            if (sub_in_range.string) then
                 table.insert(
                     sentences_in_range,
                     {
                         keystroke = keystroke,
-                        string = sub_in_range:sub(keystroke:getSubOffRange().at or 1, -1)
+                        sub_in = sub_in_range,
+                        sub_off = sub_off_range
                     }
                 )
             end
