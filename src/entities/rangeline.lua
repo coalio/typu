@@ -6,7 +6,7 @@ local rangeline_prototype = {
     name = "rangeline",
 
     pos = {
-        x = env.window.width / 2.5, -- This is the default position
+        x = env.window.width / 1.5, -- This is the default position
         y = 0
     },
 

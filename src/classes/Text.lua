@@ -6,9 +6,6 @@ local Text = {
     text = nil,
     font = nil,
     type = nil,
-    _text = nil,
-
-    sub = {},
 
     pos = {
         x = nil,
@@ -61,7 +58,7 @@ function Text:isInRange()
     if (self.type == "lyric_dynamic") then
         return (
             self.pos.x < manager.entities[2].pos.x and 
-            self.pos.x + self.dim.w > manager.entities[1].pos.x
+            self.pos.x > manager.entities[1].pos.x
         )
     end
 end
@@ -106,8 +103,35 @@ function Text:getSubOffRange()
     return min_sub
 end
 
+function Text:updateSubs(caret_pos)
+    local text_len = self.text:len()
+
+    self.sub = {}
+    local caret_pos = caret_pos or 1
+    for at = caret_pos, text_len do
+        local string = self.text:sub(caret_pos, at)
+        self.sub[at] = {
+            at = at,
+            string = string,
+            width = self.font:getWidth(string)
+        }
+    end
+
+    return self.sub
+end
+
+function Text:getCharArray()
+    local char_array = {}
+
+    for char in self.text:gmatch('(.)') do
+        table.insert(char_array, char)
+    end
+
+    return char_array
+end
+
 return class('Text', Text, function(new_text)
-    manager.entities:add(new_text)
+    new_text.sub = {}
 
     for at, character in new_text.text:gmatch('()(.)') do
         local string = new_text.text:sub(1, at)
@@ -117,6 +141,8 @@ return class('Text', Text, function(new_text)
             width = new_text.font:getWidth(string)
         }
     end
+
+    manager.entities:add(new_text)
 
     return new_text
 end)

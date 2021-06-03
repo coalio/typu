@@ -44,7 +44,6 @@ function loader:deserialize(map_path)
     }
 
     local map_tags = parser:parse(map_data_raw)
-    for k,v in pairs(map_tags) do for k,v in pairs(v) do print(k,v) end end
     for index, tag in pairs(map_tags) do
         map_data[index] = {}
         map_data[index].interval = tag.interval

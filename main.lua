@@ -18,6 +18,7 @@ gradient = require('src.utils.gradient')
 loader = require('src.loader')
 keyboard = require('src.keyboard')
 manager = require('src.manager')
+event_master = require('src.event_master')
 
 function love.load()
     if (env.muted) then
@@ -48,9 +49,18 @@ function love.update(delta)
     render.delta = delta
     render.avdelta = love.timer.getAverageDelta()
     game:update()
+    
+    for key in pairs(keyboard:getKeystrokes()) do
+        game:handleKeypress(key)
+    end
+
     manager:eventHandler()
 end
 
 function love.keypressed(key, scancode, is_repeat)
     keyboard:handleKeypress(key, scancode, is_repeat)
+end
+
+function love.keyreleased(key, scancode)
+    keyboard:handleKeyReleased(key, scancode)
 end

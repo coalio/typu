@@ -24,6 +24,20 @@ function interface.drawLyricsPreview()
             env.window.height - 36
         )
     end
+
+    if (game.current.keystrokes and game.current.keystrokes ~= '') then
+        local old_color = table.pack(love.graphics.getColor())
+        love.graphics.setColor(255, 255, 255, 0.4)
+        love.graphics.setFont(game.preview_keystroke_font)
+        love.graphics.print(
+            game.current.keystrokes,
+                env.window.width / 2 - 
+                game.preview_keystroke_font:getWidth(game.current.keystrokes) / 2 + 
+                game.current.keystrokes_offset,
+            env.window.height / 2 + 50
+        )
+        love.graphics.setColor(unpack(old_color))
+    end
 end
 
 return interface

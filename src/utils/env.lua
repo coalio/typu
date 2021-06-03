@@ -11,7 +11,7 @@ end
 env = {
     platform = package.config:sub(1,1) == '\\' and 'windows' or '?nix',
     debug = true,
-    muted = true
+    muted = false
 }
 
 env.window = table.pack(

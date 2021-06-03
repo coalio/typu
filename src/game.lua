@@ -2,16 +2,19 @@ local game = {
     preview_font = love.graphics.newFont(12),
     current_font = love.graphics.newFont(24),
     keystroke_font = love.graphics.newFont(64),
+    preview_keystroke_font = love.graphics.newFont(48),
     currently_playing = nil,
     entered_instruction = nil,
     video = nil,
     background = nil,
     map = nil,
     current = {
+        keystrokes = '',
+        keystrokes_offset = 0,
         instruction_index = nil,
         old_clock = 0,
-        speed = 100, -- Test speed, this should be set from the map
-        sentence = '' -- This is the sub in range
+        speed = 500, -- Test speed, this should be set from the map
+        sentence = {} -- This is the sub in range
     }
 }
 
@@ -73,12 +76,51 @@ function game:finish()
     os.exit(0) -- eh, ill do something here eventually
 end 
 
+function game:updateKeystrokesPreview()
+    local last_keystroke = {}
+    for index, keystroke in pairs(manager.entities:getKeystrokes()) do
+        if (keystroke:isInRange()) then
+            last_keystroke = keystroke
+            break
+        end
+    end
+
+    if (not last_keystroke.pos) then
+        game.current.keystrokes = ''
+        return
+    end
+
+    game.current.keystrokes = last_keystroke.text
+    return
+end
+
 function game:handleKeypress(key, scancode, is_repeat)
     local sentences = self:checkInRange()
-    for index, sentence in pairs(sentences) do
-        if (key == sentence.string:sub(1, 1)) then
-            -- Do something to count the keystroke
+
+    table.sort(sentences, function(a, b)
+        return a.keystroke.pos.x < b.keystroke.pos.x 
+    end)
+
+    -- The closest sentence takes relevancy
+    local sentence = sentences[1]
+    if (not sentence) then
+        return -- No sentences in range
+    end
+
+    if (key == sentence.string:sub(1, 1)) then
+        local text = 
+            sentence.keystroke.text:sub(1, (sentence.sub_off.at or 0)) ..
+            sentence.keystroke.text:sub((sentence.sub_off.at or 0) + 2, -1)
+
+        sentence.keystroke.text = text
+        sentence.keystroke.pos.x = sentence.keystroke.pos.x + sentence.keystroke.sub[1].width
+
+        if (sentence.keystroke.text:len() == 0) then
+            sentence.keystroke:destroy()
+            return
         end
+
+        sentence.keystroke:updateSubs(sentence.sub_off.at)
     end
 end
 
@@ -93,17 +135,9 @@ function game:nextInstruction()
 end
 
 function game:performAction(action)
-    if (action.type == "RANGELINE") then
-        local event = Event:new {
-            action = "move",
-            attribution_id = 2,
-            event_type = "Entity",
-            payload = {
-                --[[ x ]] action.params[1], --[[ y ]] 0
-            }
-        }
-        
-        manager.events_stack:push(event)
+    local handler = event_master[action.type]
+    if (handler) then
+        handler(action)
     end
 end
 
@@ -119,7 +153,8 @@ function game:checkInRange()
                     {
                         keystroke = keystroke,
                         sub_in = sub_in_range,
-                        sub_off = sub_off_range
+                        sub_off = sub_off_range,
+                        string = sub_in_range.string:sub(sub_off_range.at or 1, -1)
                     }
                 )
             end
@@ -158,6 +193,8 @@ function game:update()
             keystroke:move(-1, 0)
         end
     end
+
+    game:updateKeystrokesPreview()
 end
 
 function game:drawKeystrokes()
@@ -179,6 +216,12 @@ function game:draw()
     interface.drawLyricsPreview()
     
     game:drawKeystrokes()
+end
+
+function game:eventHandler(event)
+    if (event.action == "set_speed") then
+        game.current.speed = event.payload[1]
+    end
 end
 
 return game

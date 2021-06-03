@@ -5,6 +5,8 @@ function manager:eventHandler()
         local event = self.events_stack:pop()
         if (event.event_type == "Entity") then
             self.entities[event.attribution_id]:eventHandler(event)
+        elseif (event.event_type == "Game") then
+            game:eventHandler(event)
         end
     end
 end
