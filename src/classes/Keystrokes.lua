@@ -1,4 +1,4 @@
-local Text = {
+local Keystrokes = {
     move = nil,
     draw = nil,
     isVisible = nil,
@@ -24,12 +24,12 @@ local Text = {
 }
 
 -- Add colored text
-function Text:move(x, y)
+function Keystrokes:move(x, y)
     self.pos.x = self.pos.x + (render.delta * (x * self.mov.vx))
     self.pos.y = self.pos.y + (render.delta * (y * self.mov.vy))
 end
 
-function Text:draw()
+function Keystrokes:draw()
     love.graphics.setFont(love.graphics.newFont(16))
     love.graphics.print(math.floor(self.pos.x) .. ' ' .. 
         (self:getSubInRange().string and self:getSubInRange().string:sub(self:getSubOffRange().at or 1, -1) or 'out-of-range'),
@@ -39,22 +39,22 @@ function Text:draw()
     love.graphics.print(self.text, self.pos.x, self.pos.y)
 end
 
-function Text:isVisible()
+function Keystrokes:isVisible()
     return (
         self.pos.x + self.dim.w > 0 and self.pos.x < env.window.width and 
         self.pos.y + self.dim.h > 0 and self.pos.y < env.window.height
     )
 end
 
-function Text:isOutOfBounds()
+function Keystrokes:isOutOfBounds()
     return self.pos.x + self.dim.w < 0
 end
 
-function Text:destroy()
+function Keystrokes:destroy()
     manager.entities:delete(self.id)
 end
 
-function Text:isInRange()
+function Keystrokes:isInRange()
     if (self.type == "lyric_dynamic") then
         return (
             self.pos.x < manager.entities[2].pos.x and 
@@ -63,17 +63,17 @@ function Text:isInRange()
     end
 end
 
-function Text:colorTextAt(start_at, end_at)
-    -- https://love2d.org/wiki/Text
+function Keystrokes:colorKeystrokesAt(start_at, end_at)
+    -- https://love2d.org/wiki/Keystrokes
 end
 
-function Text:eventHandler(event)
+function Keystrokes:eventHandler(event)
     if (event.action == "move") then
         self:move(unpack(event.payload))
     end
 end
 
-function Text:getSubInRange()
+function Keystrokes:getSubInRange()
     local min_sub = {width = 0}
 
     for index, sub in pairs(self.sub) do
@@ -88,7 +88,7 @@ function Text:getSubInRange()
     return min_sub
 end
 
-function Text:getSubOffRange()
+function Keystrokes:getSubOffRange()
     local min_sub = {width = 0}
 
     for index, sub in pairs(self.sub) do
@@ -103,7 +103,7 @@ function Text:getSubOffRange()
     return min_sub
 end
 
-function Text:updateSubs(caret_pos)
+function Keystrokes:updateSubs(caret_pos)
     local text_len = self.text:len()
 
     self.sub = {}
@@ -120,7 +120,7 @@ function Text:updateSubs(caret_pos)
     return self.sub
 end
 
-function Text:getCharArray()
+function Keystrokes:getCharArray()
     local char_array = {}
 
     for char in self.text:gmatch('(.)') do
@@ -130,7 +130,7 @@ function Text:getCharArray()
     return char_array
 end
 
-return class('Text', Text, function(new_text)
+return class('Keystrokes', Keystrokes, function(new_text)
     new_text.sub = {}
 
     for at, character in new_text.text:gmatch('()(.)') do

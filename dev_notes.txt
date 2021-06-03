@@ -1,0 +1,21 @@
+Interface:
+    - Game: Still planning
+
+    - Menu:
+        Levels in the middle, center levels are larger than the ones in the edges
+        Folders at the left
+        Scores at the right
+
+        Easier levels top, harder levels bottom
+        Sometimes a label with the WPM (in tens)
+        I.e: 50WPM+, 60WPM+, 120WPM, 180WPM+, 200WPM+
+
+    - Splash screen
+        Logo in the middle
+        Game options under the logo in the classical vertical line
+        Slide left (click the arrow at the right side of the screen) to go to menu
+        The slide should be animated ofc, don't do it instantaneously or the animation
+        will be harder to do later
+
+    - Settings
+        Classical every-game-settings, a menu with tabs and options
