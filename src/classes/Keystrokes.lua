@@ -17,10 +17,7 @@ local Keystrokes = {
         vy = nil,
     },
 
-    dim = {
-        w = nil,
-        h = nil
-    }
+    dim = {}
 }
 
 -- Add colored text
@@ -142,6 +139,9 @@ return class('Keystrokes', Keystrokes, function(new_text)
         }
     end
 
+    new_text.original = new_text.text
+    new_text.dim.original_width = new_text.font:getWidth(new_text.original)
+    
     manager.entities:add(new_text)
 
     return new_text

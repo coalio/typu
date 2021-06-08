@@ -19,8 +19,9 @@ local game = {
         turn = 0,
         instruction_index = nil,
         keystrokes = '',
-        keystrokes_offset = 0,
+        keystroke = {},
         last_key = '',
+        last_lyrics = nil,
         old_clock = 0,
         sentence = {}, -- This is the sub in range
         speed = 500 -- Test speed, this should be set from the map
@@ -98,6 +99,7 @@ end
     Its supposed to display the overall results of the match, but right now it does nothing.
 ]]
 function game:finish()
+    print('Game finished')
     os.exit(0)
 end 
 
@@ -107,9 +109,31 @@ end
 function game:updateKeystrokesPreview()
     local preview_keystroke = self:getCurrentKeystroke()
     game.current.keystrokes = preview_keystroke and preview_keystroke.keystroke.text or ''
+    self:updateKeystrokesOffset(preview_keystroke, '')
     return
 end
 
+--[[
+    Update the keystrokes offset so it doesnt slide left as you type
+]]
+function game:updateKeystrokesOffset(sentence, key)
+    if (not sentence) then
+        self.current.preview_keystrokes_offset = 0
+        return
+    end
+
+    local last_lyrics = self.current.last_lyrics or sentence.keystroke.original
+    if (last_lyrics ~= sentence.keystroke.original) then
+        self.current.preview_keystrokes_offset = 0
+        self.current.last_lyrics = sentence.keystroke.original
+        return
+    end
+
+    self.current.preview_keystrokes_offset = 
+        self.current.preview_keystrokes_offset + 
+        self.preview_keystroke_font:getWidth(key)
+    self.current.last_lyrics = sentence.keystroke.original
+end
 
 --[[
     This function returns you the current keystrokes group.
@@ -135,6 +159,8 @@ function game:getCurrentKeystroke()
         return nil -- No sentences in range
     end
 
+    self.current.keystroke = sentence.keystroke
+
     return sentence
 end
 
@@ -153,18 +179,19 @@ function game:handleKeypress(key, scancode, is_repeat)
 
     if (key == sentence.string:sub(1, 1)) then
         local text = 
-            sentence.keystroke.text:sub(1, (sentence.sub_off.at or 0)) ..
-            sentence.keystroke.text:sub((sentence.sub_off.at or 0) + 2, -1)
+            sentence.keystroke.text:sub(2, -1)
 
         sentence.keystroke.text = text
         sentence.keystroke.pos.x = sentence.keystroke.pos.x + sentence.keystroke.sub[1].width
+        
+        self:updateKeystrokesOffset(sentence, sentence.keystroke.sub[1].string)
 
         if (sentence.keystroke.text:len() == 0) then
             sentence.keystroke:destroy()
             return
         end
 
-        sentence.keystroke:updateSubs(sentence.sub_off.at)
+        sentence.keystroke:updateSubs()
         self.current.last_key = key
 
         return true
@@ -200,7 +227,9 @@ function game:nextInstruction()
     self.current.old_clock = self.current.time
     self.current.instruction_index = self.current.instruction_index + 1
     self.entered_instruction = not self.entered_instruction
+end
 
+function game:checkIfFinished()
     if (not self.current.instruction or self.current.instruction.text and self.current.instruction.text:match('END')) then
         self:finish()
     end
@@ -231,15 +260,13 @@ function game:checkInRange()
     for id, keystroke in pairs(manager.entities:getKeystrokes()) do
         if (keystroke:isInRange()) then
             local sub_in_range = keystroke:getSubInRange()
-            local sub_off_range = keystroke:getSubOffRange()
             if (sub_in_range.string) then
                 table.insert(
                     sentences_in_range,
                     {
                         keystroke = keystroke,
                         sub_in = sub_in_range,
-                        sub_off = sub_off_range,
-                        string = sub_in_range.string:sub(sub_off_range.at or 1, -1)
+                        string = sub_in_range.string:sub(1, sub_in_range.at)
                     }
                 )
             end
@@ -264,6 +291,8 @@ function game:update()
     self.current.instruction = self.map[self.current.instruction_index]
     self.current.next_instruction = self.map[self.current.instruction_index + 1]
     
+    self:checkIfFinished()
+
     if (not self.entered_instruction) then
         self.entered_instruction = not self.entered_instruction
         if (self.current.instruction.text) then
@@ -294,7 +323,7 @@ function game:update()
     local key_array = keyboard:getKeyboardStateArray()
     for index, keystroke in ipairs(key_array) do
         if index == env.key_limit then break end
-        if (not keyboard:isKeystrokeValidated(keystroke.index) and not self:isKeystrokeRepeated(keystroke.key)) then
+        if (not keyboard:isKeystrokeValidated(keystroke.index) or self:isKeystrokeRepeated(keystroke.key)) then
             local is_keystroke_correct = self:handleKeypress(keystroke.key)
             if (not is_keystroke_correct) then 
                 keyboard:validateKeystroke(keystroke)
