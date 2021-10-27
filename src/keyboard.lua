@@ -5,11 +5,15 @@ local keyboard = {
 }
 
 function keyboard:handleKeypress(key, scancode, is_repeat)
-    table.insert(self.history, key)
+    table.insert(self.history, key:len() > 1 and " " or key)
     self.keyboard_state[key] = {
         key = key,
         index = #self.history
     }
+
+    if #self.history > 100 then
+        table.remove(self.history, 1)
+    end
 end
 
 function keyboard:handleKeyReleased(key, scancode)

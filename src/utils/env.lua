@@ -12,7 +12,7 @@ env = {
     platform = package.config:sub(1,1) == '\\' and 'windows' or '?nix',
     debug = true,
     muted = false,
-    key_limit = 5 -- Handle only first 5 keystrokes
+    key_limit = 123948239480 -- Handle only first 10 keystrokes
 }
 
 env.window = table.pack(

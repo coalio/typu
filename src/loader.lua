@@ -47,7 +47,8 @@ function loader:deserialize(map_path)
     for index, tag in pairs(map_tags) do
         map_data[index] = {}
         map_data[index].interval = tag.interval
-        map_data[index].text = tag.command:match('"(.-)"')
+        map_data[index].text = tag.command:match('\'(.-)\'')
+        map_data[index].lyrics = tag.command:match('"(.-)"')
         map_data[index].actions = {}
         for action, params in tag.command:gmatch('([%w_]+); (.-)[\r\n;,>]') do
             table.insert(map_data[index].actions, {

@@ -6,8 +6,8 @@
 ]]
 
 local game = {
-    preview_font = love.graphics.newFont(12),
-    current_font = love.graphics.newFont(24),
+    preview_font = love.graphics.newFont(24),
+    current_font = love.graphics.newFont(28),
     keystroke_font = love.graphics.newFont(64),
     preview_keystroke_font = love.graphics.newFont(48),
     currently_playing = nil,
@@ -46,7 +46,7 @@ function game:play(map_data)
             local video_path = table.concat(action.params)
             self.background = Background:new {
                 video = Video:new {
-                    _stream = love.graphics.newVideo(map_data.path .. video_path)
+                    video_object = love.graphics.newVideo(map_data.path .. video_path)
                 }
             }
         elseif (action.type == "SONG_NAME") then
@@ -196,6 +196,7 @@ function game:handleKeypress(key, scancode, is_repeat)
 
         return true
     else
+        print("Failed", sentence.string:sub(1, 1), key)
         return false
     end
 end
@@ -219,9 +220,7 @@ function game:isKeystrokeRepeated(key)
 end
 
 --[[
-    This function runs when the current instruction is done, in which case jumps to the next instruction.
-
-    It also checks if the game is finished.
+    This function runs when the current instruction is done. Jumps to the next instruction.
 ]]
 function game:nextInstruction()
     self.current.old_clock = self.current.time
@@ -246,7 +245,7 @@ function game:performAction(action)
 end
 
 --[[
-    This functino returns you a list of the keystrokes in range (between borderline and rangeline).
+    This function returns you a list of the keystrokes in range (between borderline and rangeline).
 
     It uses memoization for the results because, in the same turn, the same sentences will be in range as
     none has moved anywhere.
@@ -365,6 +364,7 @@ function game:draw()
 
     interface.drawGradients() -- Background gradients
     interface.drawLyricsPreview()
+    interface.drawHistory()
     
     game:drawKeystrokes()
 end
