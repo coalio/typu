@@ -3,7 +3,6 @@ render --[[ render information ]] = {
     delta --[[ time between frames ]] = 0
 }
 
-
 local sdir = love.filesystem.getSourceBaseDirectory()
 local dir = love.filesystem.getWorkingDirectory()
 
@@ -26,7 +25,7 @@ function love.load()
         love.audio.setVolume(0)
     end
 
-    love.window.setVSync(1)
+    -- love.window.setVSync(1)
     -- Load classes 
     Entity = require('src.classes.Entity')
     Video = require('src.classes.Video')

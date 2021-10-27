@@ -3,8 +3,8 @@ Interface:
 
     - Menu:
         Levels in the middle, center levels are larger than the ones in the edges
-        Folders at the left
-        Scores at the right
+        Folders at the right
+        Scores at the left
 
         Easier levels top, harder levels bottom
         Sometimes a label with the WPM (in tens)
